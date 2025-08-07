@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# My Custom Ignores - Keep secrets out of the repository
+appsettings.Development.json
