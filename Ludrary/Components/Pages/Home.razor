@@ -1,7 +1,31 @@
-﻿@page "/"
+﻿@inject RawgApiService RawgApi
+@page "/"
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>@message</h1>
 
 Welcome to your new app.
+@code{
+    string message;
+    List<Game> games;
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            games = await RawgApi.GetPopularGamesAsync();
+            if (games.Any())
+            {
+                message = $"Başarılı! çekilen oyun adedi = {games.Count} - İlk oyun = {games.First().Name}";
+            }
+            else
+            {
+                message = "Oyun listesi çekilemedi veya boş.";
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Hata oluştu: {ex.Message}";
+        }
+    }
+}

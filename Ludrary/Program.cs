@@ -1,4 +1,5 @@
 using Ludrary.Components;
+using Ludrary.Services;
 
 namespace Ludrary
 {
@@ -11,6 +12,11 @@ namespace Ludrary
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
+
+            builder.Services.AddHttpClient<RawgApiService>(client =>
+            {
+                client.BaseAddress = new Uri("https://api.rawg.io/api/");
+            });
 
             var app = builder.Build();
 
