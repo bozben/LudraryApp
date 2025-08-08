@@ -3,29 +3,23 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>@message</h1>
+@if (games == null)
+{
+    <p>Loading Games</p>
+}else{
+    <div class="game-grid">
+        @foreach(var game in games)
+        {            
+            <GameCard Game="game"/>
+        }
+    </div>
+    
+}
 
-Welcome to your new app.
 @code{
-    string message;
     List<Game> games;
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            games = await RawgApi.GetPopularGamesAsync();
-            if (games.Any())
-            {
-                message = $"Başarılı! çekilen oyun adedi = {games.Count} - İlk oyun = {games.First().Name}";
-            }
-            else
-            {
-                message = "Oyun listesi çekilemedi veya boş.";
-            }
-        }
-        catch (Exception ex)
-        {
-            message = $"Hata oluştu: {ex.Message}";
-        }
+        games = await RawgApi.GetPopularGamesAsync();
     }
 }

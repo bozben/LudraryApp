@@ -1,0 +1,15 @@
+﻿<div class="game-card">
+	<img class="game-card-image" src="@Game.BackgroundImage" alt="@Game.Name" />
+	<div class="game-card-body">
+		<h5 class="game-card-title">@Game.Name</h5>
+		@if (Game.Metacritic.HasValue)
+		{
+			<span class="metacritic-score">@Game.Metacritic</span>
+		}
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public Game Game { get; set; }
+}
