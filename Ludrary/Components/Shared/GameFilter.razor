@@ -1,0 +1,31 @@
+﻿
+<div class="filter-container">
+    <select @bind="searchParameters.Genres" class="form-select">
+        <!--Rawg Api formatındaki genre isimleri-->
+        <option value="">All Genres</option> 
+        <option value="action">Action</option>
+        <option value="indie">Indie</option>
+        <option value="adventure">Adventure</option>
+        <option value="role-playing-games-rpg">RPG</option>
+        <option value="strategy">Strategy</option>
+        <option value="shooter">Shooter</option>
+        <option value="puzzle">Puzzle</option>
+    </select>
+
+    <button @onclick="Search" class="btn btn-primary">Search</button>
+</div>
+
+
+@code {
+	private SearchParameters searchParameters = new();
+
+	[Parameter]
+	public EventCallback<SearchParameters> OnSearchClicked { get; set; }
+
+	private Task Search()
+	{
+		return OnSearchClicked.InvokeAsync(searchParameters);
+	}
+
+
+}

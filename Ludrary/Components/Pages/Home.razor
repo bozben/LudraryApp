@@ -2,6 +2,10 @@
 @page "/"
 
 <PageTitle>Home</PageTitle>
+<h1>Ludrary</h1>
+<GameFilter OnSearchClicked="HandleSearch"/>
+
+<hr/>
 
 @if (games == null)
 {
@@ -12,14 +16,47 @@
         {            
             <GameCard Game="game"/>
         }
-    </div>
-    
+
+    </div>  
+    @if (games.Count >0 && games.Count!=null)
+    {
+        <div class="mt-4 text-center">
+            <button type="button" @onclick="LoadMore" class="btn btn-success">
+                Load More
+            </button>
+        </div>
+        
+    }
 }
 
+
 @code{
+    private SearchParameters _searchParameters = new();
+    private int _currentPage = 1;
+
     List<Game> games;
+
+
     protected override async Task OnInitializedAsync()
     {
         games = await RawgApi.GetPopularGamesAsync();
     }
+
+    protected async Task HandleSearch(SearchParameters parameters)
+    {
+        _searchParameters = parameters;
+        _currentPage = 1;
+
+        games = await RawgApi.SearchGamesAsync(_searchParameters, _currentPage);
+    }
+
+    protected async Task LoadMore()
+    {
+        _currentPage++;
+        List<Game> newGames;
+        newGames = await RawgApi.SearchGamesAsync(_searchParameters, _currentPage);
+        games.AddRange(newGames);
+    }
+
+    
 }

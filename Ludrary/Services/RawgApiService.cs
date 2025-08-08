@@ -8,23 +8,42 @@ namespace Ludrary.Services
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
 
+        string apiKey;
         public RawgApiService (HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
             _configuration = configuration;
+            apiKey = _configuration["Rawg:ApiKey"];
         }
 
         public async Task<List<Game>> GetPopularGamesAsync()
         {
-            string apiKey = _configuration["Rawg:ApiKey"];
+            var url = $"games?key={apiKey}&page_size=12";
 
-            var response =await _httpClient.GetAsync($"games?key={apiKey}&page_size=12");
+            var response =await _httpClient.GetAsync(url);
             response.EnsureSuccessStatusCode();
 
             string jsonContent =  await response.Content.ReadAsStringAsync();
             var GameListResponse = JsonSerializer.Deserialize<GameListResponse>(jsonContent);
 
             return GameListResponse.Games;
+        }
+
+        public async Task<List<Game>> SearchGamesAsync(SearchParameters searchParams,int page=1)
+        {
+            var url = $"games?key={apiKey}&page={page}&page_size=12";
+            if (!string.IsNullOrEmpty(searchParams.Genres))
+            {
+                url += $"&genres={searchParams.Genres}";
+            }
+
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            string jsonContent = await response.Content.ReadAsStringAsync() ;
+            var SearchListResponse = JsonSerializer.Deserialize<GameListResponse>(jsonContent);
+
+            return SearchListResponse.Games;
         }
     }
 }
