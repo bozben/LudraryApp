@@ -6,6 +6,11 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+.game-card:hover{
+    transform: scale(1.03); 
 }
 
 .game-card-image {
@@ -25,5 +30,5 @@
     border-radius: 2px;
     padding: 2px 6px;
     font-weight: bold;
-    
 }
+

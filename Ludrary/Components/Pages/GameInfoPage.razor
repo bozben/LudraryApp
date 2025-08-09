@@ -1,0 +1,130 @@
+﻿@inject RawgApiService RawgApi
+
+@page "/game/{Id:int}"
+<PageTitle>@(gameInfo?.Name ?? "Loading...")</PageTitle>
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+	<p class="alert alert-danger">@errorMessage</p>
+}
+else if (gameInfo == null)
+{
+	<h2 class="text-center">Loading Game Details...</h2>
+}
+else
+{
+	<div class="game-info-grid">
+
+		<div class="game-image-container">
+			<img src="@gameInfo.BackgroundImage" class="img-fluid" alt="@gameInfo.Name" />
+		</div>
+
+		<div class="game-info-container">
+			<h1>@gameInfo.Name</h1>
+			@if (gameInfo.Metacritic.HasValue)
+			{
+				<p><strong>Metacritic Score:</strong> <span class="metacritic-score @GetMetacriticClass(gameInfo.Metacritic.Value)">@gameInfo.Metacritic</span></p>
+			}
+			<hr />
+			<p><strong>Developers:</strong> @GetDevoloperNames()</p>
+			<p><strong>Genres:</strong> @GetGenreNames()</p>
+			<p><strong>Platforms:</strong> @GetPlatformNames()</p>
+			<p><strong>Website:</strong> <a href="@gameInfo.Website" target="_blank">@gameInfo.Website</a></p>
+		</div>
+
+
+		<div class="game-description-container">
+			<h3>Description</h3>
+			<p>@gameInfo.Description</p>
+		</div>
+	</div>
+	
+}
+
+@code {
+	[Parameter]
+	public int Id { get; set; }
+
+	private GameInfo gameInfo;
+	private string errorMessage;
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			gameInfo = await RawgApi.GetGameInfoAsync(Id);
+		}
+		catch (Exception ex)
+		{
+			errorMessage = $"Bir hata oluştu: {ex.Message}";
+		}
+	}
+
+	private string GetDevoloperNames()
+	{
+		List<string> devoloperNames = new();
+		if(gameInfo.Developers != null && gameInfo.Developers.Any())
+		{
+			foreach(var dev in gameInfo.Developers)
+			{
+				devoloperNames.Add(dev.Name);
+			}
+			return string.Join(", ", devoloperNames);
+		}
+		else
+		{
+			return "Not Available";
+		}
+	}
+	private string GetGenreNames()
+	{
+		List<string> genreNames = new();
+		if (gameInfo.Genres != null && gameInfo.Genres.Any())
+		{
+			foreach (var genre in gameInfo.Genres)
+			{
+				genreNames.Add(genre.Name);
+			}
+			return string.Join(", ", genreNames);
+		}
+		else
+		{
+			return "Not Available";
+		}
+	}
+
+	private string GetPlatformNames()
+	{
+		List<string> platformNames = new();
+		if (gameInfo!=null && gameInfo.Platforms != null && gameInfo.Platforms.Any())
+		{
+			foreach (var platform in gameInfo.Platforms)
+			{
+				platformNames.Add(platform.Platform.Name);
+			}
+			return string.Join(", ", platformNames);
+		}
+		else
+		{
+			return "Not Available";
+		}
+	}
+	private string GetMetacriticClass(int score)
+	{
+		string result = "";
+		if (score >= 80)
+		{
+			result = "metacritic-high";
+		}else if (score >= 50)
+		{
+			result = "metacritic-medium";
+		}
+		else
+		{
+			result = "metacritic-low";
+		}
+		return result;
+	}
+
+
+	
+}

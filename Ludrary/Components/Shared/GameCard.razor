@@ -1,4 +1,4 @@
-﻿<div class="game-card">
+﻿<div class="game-card" @onclick="NavigateToInfoPage">
 	<img class="game-card-image" src="@Game.BackgroundImage" alt="@Game.Name" />
 	<div class="game-card-body">
 		<h5 class="game-card-title">@Game.Name</h5>
@@ -8,8 +8,21 @@
 		}
 	</div>
 </div>
+	
+
+
 
 @code {
+	[Inject]
+	public NavigationManager NavigationManager { get; set; }
+
 	[Parameter]
 	public Game Game { get; set; }
+
+	private void NavigateToInfoPage()
+	{
+		NavigationManager.NavigateTo($"/game/{Game.Id}");
+	}
+
+
 }

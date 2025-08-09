@@ -1,4 +1,5 @@
 ﻿using Ludrary.Models;
+using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
 namespace Ludrary.Services
@@ -24,7 +25,11 @@ namespace Ludrary.Services
             response.EnsureSuccessStatusCode();
 
             string jsonContent =  await response.Content.ReadAsStringAsync();
-            var GameListResponse = JsonSerializer.Deserialize<GameListResponse>(jsonContent);
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            var GameListResponse = JsonSerializer.Deserialize<GameListResponse>(jsonContent, options);
 
             return GameListResponse.Games;
         }
@@ -41,9 +46,30 @@ namespace Ludrary.Services
             response.EnsureSuccessStatusCode();
 
             string jsonContent = await response.Content.ReadAsStringAsync() ;
-            var SearchListResponse = JsonSerializer.Deserialize<GameListResponse>(jsonContent);
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            var SearchListResponse = JsonSerializer.Deserialize<GameListResponse>(jsonContent, options);
 
             return SearchListResponse.Games;
+        }
+
+        public async Task<GameInfo?> GetGameInfoAsync(int id)
+        {
+            var url = $"games/{id}?key={apiKey}";
+
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            string jsonContent= await response.Content.ReadAsStringAsync() ;
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            var result = JsonSerializer.Deserialize<GameInfo>(jsonContent, options);
+
+            return result;
         }
     }
 }
