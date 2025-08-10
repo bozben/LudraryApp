@@ -71,5 +71,22 @@ namespace Ludrary.Services
 
             return result;
         }
+
+        public async Task<List<Game>> GetGamesInSeriesAsync(int gameId)
+        {
+            var url = $"games/{gameId}/game-series?key={apiKey}";
+
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            string jsonContent=await response.Content.ReadAsStringAsync() ;
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            var similarGameResponse = JsonSerializer.Deserialize<GameListResponse>(jsonContent, options);
+
+            return similarGameResponse.Games;
+        }
     }
 }

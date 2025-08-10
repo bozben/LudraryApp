@@ -7,7 +7,7 @@
 
 <hr/>
 
-@if (games == null)
+@if (_isLoading==true)
 {
     <p>Loading Games</p>
 }else{
@@ -33,29 +33,59 @@
 @code{
     private SearchParameters _searchParameters = new();
     private int _currentPage = 1;
-
-    List<Game> games;
+    private bool _isLoading = true;
+    List<Game> games = new();
 
 
     protected override async Task OnInitializedAsync()
     {
-        games = await RawgApi.GetPopularGamesAsync();
+        try
+        {
+            games = await RawgApi.GetPopularGamesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
     }
 
-    protected async Task HandleSearch(SearchParameters parameters)
+    private async Task HandleSearch(SearchParameters parameters)
     {
+        _isLoading = true;
         _searchParameters = parameters;
         _currentPage = 1;
+        try
+        {
+            games = await RawgApi.SearchGamesAsync(_searchParameters, _currentPage);
 
-        games = await RawgApi.SearchGamesAsync(_searchParameters, _currentPage);
+        }
+        finally
+        {
+            _isLoading = false;
+
+        }
     }
 
-    protected async Task LoadMore()
+    private async Task LoadMore()
     {
+        _isLoading = true;
         _currentPage++;
         List<Game> newGames;
-        newGames = await RawgApi.SearchGamesAsync(_searchParameters, _currentPage);
-        games.AddRange(newGames);
+        try
+        {
+            newGames = await RawgApi.SearchGamesAsync(_searchParameters, _currentPage);
+            games.AddRange(newGames);
+        }
+        finally
+        {
+            _isLoading = false;
+
+        }
+
     }
 
     

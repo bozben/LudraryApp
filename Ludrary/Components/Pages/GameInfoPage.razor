@@ -2,13 +2,16 @@
 
 @page "/game/{Id:int}"
 <PageTitle>@(gameInfo?.Name ?? "Loading...")</PageTitle>
-@if (!string.IsNullOrEmpty(errorMessage))
+
+
+@if (_isLoading==true)
+{
+	<p>Loading Games</p>
+
+}
+else if (!string.IsNullOrEmpty(errorMessage))
 {
 	<p class="alert alert-danger">@errorMessage</p>
-}
-else if (gameInfo == null)
-{
-	<h2 class="text-center">Loading Game Details...</h2>
 }
 else
 {
@@ -36,6 +39,21 @@ else
 			<h3>Description</h3>
 			<p>@gameInfo.Description</p>
 		</div>
+
+		@if (gamesInSeries.Any())
+		{
+			<div class="game-grid">
+				<h3>More From This Series</h3>
+				@foreach(var game in gamesInSeries)
+				{
+					@if (game.Id != gameInfo.Id)
+					{
+						<GameCard Game="game" />
+					}
+				}
+			</div>
+		}
+		
 	</div>
 	
 }
@@ -46,16 +64,23 @@ else
 
 	private GameInfo gameInfo;
 	private string errorMessage;
+	private bool _isLoading = true;
+	private List<Game> gamesInSeries = new();
 
 	protected override async Task OnInitializedAsync()
 	{
 		try
 		{
 			gameInfo = await RawgApi.GetGameInfoAsync(Id);
+			gamesInSeries = await RawgApi.GetGamesInSeriesAsync(Id);
 		}
 		catch (Exception ex)
 		{
 			errorMessage = $"Bir hata oluştu: {ex.Message}";
+		}
+		finally
+		{
+			_isLoading = false;
 		}
 	}
 
