@@ -23,35 +23,35 @@ namespace Ludrary.Models
         public string Website { get; set; }
 
         [JsonPropertyName("developers")]
-        public List<Developer> Developers { get; set; }
+        public List<DetailDevolopers> Developers { get; set; }
 
         [JsonPropertyName("platforms")]
-        public List<PlatformEntry> Platforms { get; set; }
+        public List<DetailPlatformEntry> Platforms { get; set; }
 
         [JsonPropertyName("genres")]
-        public List<Genre> Genres { get; set; }
+        public List<DetailGenres> Genres { get; set; }
     }
 
-    public class Developer
+    public class DetailDevolopers
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }
     }
 
-    public class Genre
+    public class DetailGenres
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }
     }
 
 
-    public class PlatformEntry
+    public class DetailPlatformEntry
     {
         [JsonPropertyName("platform")]
-        public Platform Platform { get; set; }
+        public DetailPlatform Platform { get; set; }
     }
 
-    public class Platform
+    public class DetailPlatform
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }

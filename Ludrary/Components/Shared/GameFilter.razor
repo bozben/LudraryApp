@@ -1,19 +1,22 @@
 ﻿
-<div class="filter-container">
-    <select @bind="searchParameters.Genres" class="form-select">
-        <!--Rawg Api formatındaki genre isimleri-->
-        <option value="">All Genres</option> 
-        <option value="action">Action</option>
-        <option value="indie">Indie</option>
-        <option value="adventure">Adventure</option>
-        <option value="role-playing-games-rpg">RPG</option>
-        <option value="strategy">Strategy</option>
-        <option value="shooter">Shooter</option>
-        <option value="puzzle">Puzzle</option>
+
+<div class="filter-container" style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+
+
+    <input type="text" @bind="searchParameters.SearchText" class="form-control" placeholder="Search for a game..." />
+
+
+    <select @bind="searchParameters.Ordering" class="form-select">
+        <option value="">Sort by Relevance</option>
+        <option value="-released">Newest</option>
+        <option value="-metacritic">Highest Score</option>
+        <option value="name">Name (A-Z)</option>
     </select>
 
-    <button @onclick="Search" class="btn btn-primary">Search</button>
+    <button type="button" @onclick="Search" class="btn btn-primary">Search</button>
 </div>
+
+
 
 
 @code {

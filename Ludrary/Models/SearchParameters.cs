@@ -2,6 +2,9 @@
 {
     public class SearchParameters
     {
-        public string Genres { get; set; }
+        public List<int> GenreIds { get; set; } = new();
+        public List<int> PlatformIds { get; set; } = new();
+        public string SearchText { get; set; }
+        public string Ordering { get; set; }
     }
 }

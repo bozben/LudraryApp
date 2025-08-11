@@ -37,9 +37,23 @@ namespace Ludrary.Services
         public async Task<List<Game>> SearchGamesAsync(SearchParameters searchParams,int page=1)
         {
             var url = $"games?key={apiKey}&page={page}&page_size=12";
-            if (!string.IsNullOrEmpty(searchParams.Genres))
+            if (searchParams.GenreIds.Any())
             {
-                url += $"&genres={searchParams.Genres}";
+                string genreString =string.Join(",", searchParams.GenreIds);
+                url += $"&genres={genreString}";
+            }
+            if (searchParams.PlatformIds.Any())
+            {
+                string platformString = string.Join(",", searchParams.PlatformIds);
+                url += $"&platforms={platformString}";
+            }
+            if (!string.IsNullOrEmpty(searchParams.SearchText))
+            {
+                url += $"&search={searchParams.SearchText}";
+            }
+            if (!string.IsNullOrEmpty(searchParams.Ordering))
+            {
+                url += $"&ordering={searchParams.Ordering}";
             }
 
             var response = await _httpClient.GetAsync(url);
@@ -87,6 +101,38 @@ namespace Ludrary.Services
             var similarGameResponse = JsonSerializer.Deserialize<GameListResponse>(jsonContent, options);
 
             return similarGameResponse.Games;
+        }
+
+        public async Task<List<Genre>> GetGenresAsync()
+        {
+            var url = $"genres?key={apiKey}";
+
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var jsonContent = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            var result = JsonSerializer.Deserialize<GenreListResponse>(jsonContent, options);
+            return result.Genres;
+        }
+
+        public async Task<List<Platform>> GetPlatformsAsync()
+        {
+            var url = $"platforms?key={apiKey}";
+
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var jsonContent = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            var result = JsonSerializer.Deserialize<PlatformListResponse>(jsonContent, options);
+            return result.Platforms;
         }
     }
 }
