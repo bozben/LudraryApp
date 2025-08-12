@@ -1,5 +1,6 @@
 ﻿using Ludrary.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using System.Text.Json;
 
 namespace Ludrary.Services
@@ -47,6 +48,17 @@ namespace Ludrary.Services
                 string platformString = string.Join(",", searchParams.PlatformIds);
                 url += $"&platforms={platformString}";
             }
+            if (searchParams.TagIds.Any())
+            {
+                string tagString = string.Join(",", searchParams.TagIds);
+                url += $"&tags={tagString}";
+            }
+            if (searchParams.StartYear.HasValue || searchParams.EndYear.HasValue)
+            {
+                var startDate = $"{searchParams.StartYear ?? 1960}-01-01";
+                var endDate = $"{searchParams.EndYear ?? DateTime.Now.Year}-12-31";
+                url += $"&dates={startDate},{endDate}";
+            }            
             if (!string.IsNullOrEmpty(searchParams.SearchText))
             {
                 url += $"&search={searchParams.SearchText}";
@@ -133,6 +145,21 @@ namespace Ludrary.Services
             };
             var result = JsonSerializer.Deserialize<PlatformListResponse>(jsonContent, options);
             return result.Platforms;
+        }
+        public async Task<List<Tag>> GetTagAsync()
+        {
+            var url = $"tags?key={apiKey}&page_size=100";
+
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var jsonContent = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            var result = JsonSerializer.Deserialize<TagListResponse>(jsonContent, options);
+            return result.Tags;
         }
     }
 }

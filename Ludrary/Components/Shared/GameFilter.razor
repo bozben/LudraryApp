@@ -1,4 +1,4 @@
-﻿
+﻿@inject RawgApiService RawgApi
 
 <div class="filter-container" style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
 
@@ -16,19 +16,33 @@
     <button type="button" @onclick="Search" class="btn btn-primary">Search</button>
 </div>
 
-
+<div>
+    <p>Loaded @(_allGenres.Count) genres.</p>
+    <p>Loaded @(_allPlatforms.Count) platforms.</p>
+    <p>Loaded @(_allTags.Count) tags.</p>
+</div>
 
 
 @code {
-	private SearchParameters searchParameters = new();
+    private SearchParameters searchParameters = new();
+    private List<Genre> _allGenres = new();
+    private List<Platform> _allPlatforms = new();
+    private List<Tag> _allTags = new();
 
-	[Parameter]
-	public EventCallback<SearchParameters> OnSearchClicked { get; set; }
+    [Parameter]
+    public EventCallback<SearchParameters> OnSearchClicked { get; set; }
 
-	private Task Search()
-	{
-		return OnSearchClicked.InvokeAsync(searchParameters);
-	}
+    private Task Search()
+    {
+        return OnSearchClicked.InvokeAsync(searchParameters);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _allGenres = await RawgApi.GetGenresAsync();
+        _allPlatforms = await RawgApi.GetPlatformsAsync();
+        _allTags = await RawgApi.GetTagAsync();
+    }
 
 
 }
