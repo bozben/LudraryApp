@@ -17,6 +17,7 @@ namespace Ludrary
             {
                 client.BaseAddress = new Uri("https://api.rawg.io/api/");
             });
+            builder.Services.AddSingleton<StaticDataService>();
 
             var app = builder.Build();
 

@@ -13,6 +13,8 @@ namespace Ludrary.Models
         public string BackgroundImage { get; set; }
         [JsonPropertyName("metacritic")]
         public int? Metacritic { get; set; }
+        [JsonPropertyName("tags")]
+        public List<Tag> Tags { get; set; }
 
     }
 }

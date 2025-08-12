@@ -1,4 +1,5 @@
-﻿<div class="game-card" @onclick="NavigateToInfoPage">
+﻿@inject StaticDataService StaticData
+<div class="game-card" @onclick="NavigateToInfoPage">
 	<img class="game-card-image" src="@Game.BackgroundImage" alt="@Game.Name" />
 	<div class="game-card-body">
 		<h5 class="game-card-title">@Game.Name</h5>
@@ -6,6 +7,25 @@
 		{
 			<span class="metacritic-score">@Game.Metacritic</span>
 		}
+		@if (Game.Tags.Any() && Game.Tags!= null)
+		{
+			<div class="game-tags">
+				@{
+					int tagsToShow = 0;
+					@foreach (var tag in Game.Tags)
+					{
+						if(StaticData.IsTagSelected(tag.Id) && tagsToShow < 3)
+						{
+							<span class="tag">@tag.Name</span>
+							tagsToShow++;
+						}
+					}
+				}
+				
+			</div>
+		}
+		
+		
 	</div>
 </div>
 	

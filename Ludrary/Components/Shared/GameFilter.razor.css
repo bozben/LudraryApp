@@ -1,0 +1,68 @@
+﻿.filter-panel{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:1.5rem;
+    margin-bottom:1.5rem;
+}
+
+.genre-group,.platform-group,.tag-group{
+    border:1px solid #ccc;
+    border-radius:8px;
+    padding:1rem;
+}
+    .genre-group h5, .platform-group h5, .tag-group h5 {
+        margin-top: 0;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+.checkbox-list {
+    max-height: 250px;
+    overflow-y: auto;
+    / Dikey kaydırma çubuğu / padding-right: 10px;
+    / Kaydırma çubuğu metne yapışmasın diye */
+}
+.search-bar {
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 1.5rem; 
+    align-items: flex-end; 
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 1.5rem;
+}
+
+    .search-bar > div {
+        display: flex;
+        flex-direction: column; 
+        gap: 0.25rem;
+    }
+
+    .search-bar label {
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+.year-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.search-button-group {
+    margin-left: auto;
+}
+.filter-logic-notice {
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+    background-color: #f8f9fa; 
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    font-size: 0.85rem; 
+    color: #6c757d; 
+}
+
+    .filter-logic-notice strong {
+        color: #495057; 
+    }

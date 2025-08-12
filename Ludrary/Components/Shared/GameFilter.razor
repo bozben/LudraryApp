@@ -1,33 +1,156 @@
 ﻿@inject RawgApiService RawgApi
+@inject StaticDataService StaticData
 
-<div class="filter-container" style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+@if (_isLoading == true)
+{
+    <p>Loading filters</p>
+}
+else
+{
+    <div class="filter-panel">
+        <div class="genre-group">
+            <h5>GENRES</h5>
+            <div class="checkbox-list">
+            @foreach(var genre in _allGenres)
+            {
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="checkbox" 
+                           id="genre-@genre.Id" 
+                           checked="@(searchParameters.GenreIds.Contains(genre.Id))"
+                           @onchange="@((ChangeEventArgs e) => GenreSelectionChanged(e, genre))" />
 
+                    <label class="form-check-label" for="genre-@genre.Id">
+                        @genre.Name
+                    </label>
+                </div>
+            }
+            </div>
+        </div>
 
-    <input type="text" @bind="searchParameters.SearchText" class="form-control" placeholder="Search for a game..." />
+        <div class="platform-group">
+            <h5>PLATFORMS</h5>
+            <div class="checkbox-list">
+            @foreach (var platform in _allPlatforms)
+            {
+                
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           id="platform-@platform.Id"
+                           checked="@(searchParameters.PlatformIds.Contains(platform.Id))"
+                           @onchange="@((ChangeEventArgs e) => PlatformSelectionChanged(e, platform))" />
 
+                    <label class="form-check-label" for="platform-@platform.Id">
+                        @platform.Name
+                    </label>
+                </div>
+            }
+            </div>
+        </div>
 
-    <select @bind="searchParameters.Ordering" class="form-select">
-        <option value="">Sort by Relevance</option>
-        <option value="-released">Newest</option>
-        <option value="-metacritic">Highest Score</option>
-        <option value="name">Name (A-Z)</option>
-    </select>
+        <div class="tag-group">
+            <h5>TAGS</h5>
+            <div class="checkbox-list">
+            <h6>Gameplay</h6>
+            @foreach (var tag in StaticData.GameplayTags)
+            {
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           id="tag-@tag.Id"
+                               checked="@(searchParameters.TagIds.Contains(tag.Id))"
+                           @onchange="@((ChangeEventArgs e) => TagSelectionChanged(e, tag))" />
 
-    <button type="button" @onclick="Search" class="btn btn-primary">Search</button>
+                    <label class="form-check-label" for="tag-@tag.Id">
+                        @tag.Name
+                    </label>
+                </div>
+            }
+            <hr />
+                <h6>Theme & Atmosphere</h6>
+                @foreach (var tag in StaticData.ThemeTags)
+                {
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               id="tag-@tag.Id"
+                               checked="@(searchParameters.TagIds.Contains(tag.Id))"
+                               @onchange="@((ChangeEventArgs e) => TagSelectionChanged(e, tag))" />
+
+                        <label class="form-check-label" for="tag-@tag.Id">
+                            @tag.Name
+                        </label>
+                    </div>
+                }
+    <hr />
+                <h6>Visual Style & Others</h6>
+                @foreach (var tag in StaticData.StyleTags)
+                {
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               id="tag-@tag.Id"
+                               checked="@(searchParameters.TagIds.Contains(tag.Id))"
+                               @onchange="@((ChangeEventArgs e) => TagSelectionChanged(e, tag))" />
+
+                        <label class="form-check-label" for="tag-@tag.Id">
+                            @tag.Name
+                        </label>
+                    </div>
+                }
+            </div>
+        </div>
+        
+        
+    </div>
+}
+<hr />
+<div class="search-bar">
+    <div class="search-text-group">
+        <label>Search by Name:</label>
+        <input type="text" @bind="searchParameters.SearchText" class="form-control" placeholder="e.g., Cyberpunk 2077" />
+    </div>
+
+    <div class="ordering-group">
+        <label>Sort by:</label>
+        <select @bind="searchParameters.Ordering" class="form-select">
+            <option value="">Relevance</option>
+            <option value="-released">Newest</option>
+            <option value="-metacritic">Highest Score</option>
+            <option value="name">Name (A-Z)</option>
+        </select>
+    </div>
+
+    <div class="year-range-group">
+        <label>Release Year:</label>
+        <div class="year-inputs">
+            <input type="number" @bind="searchParameters.StartYear" class="form-control" placeholder="From" />
+            <span>-</span>
+            <input type="number" @bind="searchParameters.EndYear" class="form-control" placeholder="To" />
+        </div>
+    </div>
+
+    <div class="search-button-group">
+        <button type="button" @onclick="Search" class="btn btn-primary">Search</button>
+    </div>
+</div>
+<div class="filter-logic-notice">
+    <small>
+        <strong>Tip:</strong> Select multiple Genres or Platforms to see games from <strong>any</strong> of those categories .
+        Select multiple Tags to see games that have <strong>all</strong> of those tags .
+    </small>
 </div>
 
-<div>
-    <p>Loaded @(_allGenres.Count) genres.</p>
-    <p>Loaded @(_allPlatforms.Count) platforms.</p>
-    <p>Loaded @(_allTags.Count) tags.</p>
-</div>
+
+
 
 
 @code {
     private SearchParameters searchParameters = new();
     private List<Genre> _allGenres = new();
     private List<Platform> _allPlatforms = new();
-    private List<Tag> _allTags = new();
+    private bool _isLoading = true;
 
     [Parameter]
     public EventCallback<SearchParameters> OnSearchClicked { get; set; }
@@ -39,10 +162,79 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _allGenres = await RawgApi.GetGenresAsync();
-        _allPlatforms = await RawgApi.GetPlatformsAsync();
-        _allTags = await RawgApi.GetTagAsync();
+        try
+        {
+            _allGenres = await RawgApi.GetGenresAsync();
+            _allPlatforms = await RawgApi.GetPlatformsAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to laod filter data{ex.Message}");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+    private void GenreSelectionChanged(ChangeEventArgs e, Genre genre)
+    {
+        bool isChecked = (bool)e.Value;
+
+        if (isChecked)
+        {
+            if (!searchParameters.GenreIds.Contains(genre.Id))
+            {
+                searchParameters.GenreIds.Add(genre.Id);
+            }
+        }
+        else
+        {
+            if (searchParameters.GenreIds.Contains(genre.Id))
+            {
+                searchParameters.GenreIds.Remove(genre.Id);
+            }
+        }
     }
 
+    private void PlatformSelectionChanged(ChangeEventArgs e, Platform platform)
+    {
+        bool isChecked = (bool)e.Value;
 
+        if (isChecked)
+        {
+            if (!searchParameters.PlatformIds.Contains(platform.Id))
+            {
+                searchParameters.PlatformIds.Add(platform.Id);
+            }
+        }
+        else
+        {
+            if (searchParameters.PlatformIds.Contains(platform.Id))
+            {
+                searchParameters.PlatformIds.Remove(platform.Id);
+            }
+        }
+    }
+
+    private void TagSelectionChanged(ChangeEventArgs e, Tag tag)
+    {
+        bool isChecked = (bool)e.Value;
+
+        if (isChecked)
+        {
+            if (!searchParameters.TagIds.Contains(tag.Id))
+            {
+                searchParameters.TagIds.Add(tag.Id);
+            }
+        }
+        else
+        {
+            if (searchParameters.TagIds.Contains(tag.Id))
+            {
+                searchParameters.TagIds.Remove(tag.Id);
+            }
+        }
+    }
+
+    
 }

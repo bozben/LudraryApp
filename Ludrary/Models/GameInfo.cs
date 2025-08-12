@@ -30,6 +30,9 @@ namespace Ludrary.Models
 
         [JsonPropertyName("genres")]
         public List<DetailGenres> Genres { get; set; }
+
+        [JsonPropertyName("tags")]
+        public List<Tag> Tags { get; set; }
     }
 
     public class DetailDevolopers

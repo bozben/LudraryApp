@@ -1,4 +1,5 @@
 ﻿@inject RawgApiService RawgApi
+@inject StaticDataService StaticData
 
 @page "/game/{Id:int}"
 <PageTitle>@(gameInfo?.Name ?? "Loading...")</PageTitle>
@@ -31,6 +32,7 @@ else
 			<p><strong>Developers:</strong> @GetDevoloperNames()</p>
 			<p><strong>Genres:</strong> @GetGenreNames()</p>
 			<p><strong>Platforms:</strong> @GetPlatformNames()</p>
+			<p><strong>Tags:</strong> @GetTagNames()</p>
 			<p><strong>Website:</strong> <a href="@gameInfo.Website" target="_blank">@gameInfo.Website</a></p>
 		</div>
 
@@ -127,6 +129,26 @@ else
 				platformNames.Add(platform.Platform.Name);
 			}
 			return string.Join(", ", platformNames);
+		}
+		else
+		{
+			return "Not Available";
+		}
+	}
+
+	private string GetTagNames()
+	{
+		List<string> tagNames = new();
+		if (gameInfo != null && gameInfo.Tags != null && gameInfo.Tags.Any())
+		{
+			foreach (var tag in gameInfo.Tags)
+			{
+				if (StaticData.IsTagSelected(tag.Id))
+				{
+					tagNames.Add(tag.Name);
+				}
+			}
+			return string.Join(", ", tagNames);
 		}
 		else
 		{

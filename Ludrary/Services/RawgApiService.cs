@@ -52,6 +52,7 @@ namespace Ludrary.Services
             {
                 string tagString = string.Join(",", searchParams.TagIds);
                 url += $"&tags={tagString}";
+                url += "&tags_all=true";
             }
             if (searchParams.StartYear.HasValue || searchParams.EndYear.HasValue)
             {
@@ -145,21 +146,6 @@ namespace Ludrary.Services
             };
             var result = JsonSerializer.Deserialize<PlatformListResponse>(jsonContent, options);
             return result.Platforms;
-        }
-        public async Task<List<Tag>> GetTagAsync()
-        {
-            var url = $"tags?key={apiKey}&page_size=100";
-
-            var response = await _httpClient.GetAsync(url);
-            response.EnsureSuccessStatusCode();
-
-            var jsonContent = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-            var result = JsonSerializer.Deserialize<TagListResponse>(jsonContent, options);
-            return result.Tags;
         }
     }
 }
