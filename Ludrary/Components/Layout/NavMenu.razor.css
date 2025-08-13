@@ -103,3 +103,13 @@
         overflow-y: auto;
     }
 }
+
+.genre-submenu .nav-link {
+    padding-left: 2rem !important;
+    font-size: 0.9rem; 
+    color: rgba(255,255,255,0.7); 
+}
+
+    .genre-submenu .nav-link.active {
+        color: white;
+    }

@@ -1,0 +1,76 @@
+﻿@inject RawgApiService RawgApi
+@page "/upcoming"
+
+<PageTitle>Upcoming Games</PageTitle>
+<h1>Upcoming</h1>
+
+<hr />
+
+@if (_isLoading == true)
+{
+    <p>Loading Games</p>
+}
+else
+{
+    <div class="game-grid">
+        @foreach (var game in games)
+        {
+            <GameCard Game="game" />
+        }
+
+    </div>
+    @if (games.Count > 0 && games.Count != null)
+    {
+        <div class="mt-4 text-center">
+            <button type="button" @onclick="LoadMore" class="btn btn-success">
+                Load More
+            </button>
+        </div>
+
+    }
+}
+
+
+@code {
+    private SearchParameters _searchParameters = new();
+    private int _currentPage = 1;
+    private bool _isLoading = true;
+    List<Game> games = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            games = await RawgApi.GetUpcomingGamesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task LoadMore()
+    {
+        _isLoading = true;
+        _currentPage++;
+        List<Game> newGames;
+        try
+        {
+            newGames = await RawgApi.GetUpcomingGamesAsync(_currentPage);
+            games.AddRange(newGames);
+        }
+        finally
+        {
+            _isLoading = false;
+
+        }
+
+    }
+
+
+}

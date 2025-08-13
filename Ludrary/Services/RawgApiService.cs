@@ -38,11 +38,7 @@ namespace Ludrary.Services
         public async Task<List<Game>> SearchGamesAsync(SearchParameters searchParams,int page=1)
         {
             var url = $"games?key={apiKey}&page={page}&page_size=12";
-            if (searchParams.GenreIds.Any())
-            {
-                string genreString =string.Join(",", searchParams.GenreIds);
-                url += $"&genres={genreString}";
-            }
+            
             if (searchParams.PlatformIds.Any())
             {
                 string platformString = string.Join(",", searchParams.PlatformIds);
@@ -67,6 +63,15 @@ namespace Ludrary.Services
             if (!string.IsNullOrEmpty(searchParams.Ordering))
             {
                 url += $"&ordering={searchParams.Ordering}";
+            }
+            if (searchParams.GenreIds.Any())
+            {
+                string genreString = string.Join(",", searchParams.GenreIds);
+                url += $"&genres={genreString}";
+            }
+            else if (!string.IsNullOrEmpty(searchParams.GenreSlug))
+            {
+                url += $"&genres={searchParams.GenreSlug}";
             }
 
             var response = await _httpClient.GetAsync(url);
@@ -146,6 +151,61 @@ namespace Ludrary.Services
             };
             var result = JsonSerializer.Deserialize<PlatformListResponse>(jsonContent, options);
             return result.Platforms;
+        }
+
+        public async Task<List<Game>> GetUpcomingGamesAsync(int page=1)
+        {
+            var today = DateTime.Now;
+            var threeYearsFromNow = today.AddYears(3);
+
+            var startDay=today.ToString("yyyy-MM-dd");
+            var endDate=threeYearsFromNow.ToString("yyyy-MM-dd");
+
+            var url = $"games?key={apiKey}&dates={startDay},{endDate}&ordering=-added&page={page}&page_size=12";
+
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var jsonContent= await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            var result=JsonSerializer.Deserialize<GameListResponse>(jsonContent, options);
+
+            return result.Games;
+        }
+
+        public async Task<List<Game>> GetGamesByCreatorAsync(string creatorSlug, string creatorType, int page = 1)
+        {
+            var url = "";
+            if(creatorType == "developers")
+            {
+                url = $"games?key={apiKey}&developers={creatorSlug}&page={page}&page_size=12";
+            }else if(creatorType == "publishers")
+            {
+                url = $"games?key={apiKey}&publishers={creatorSlug}&page={page}&page_size=12";
+
+            }
+            else
+            {
+                Console.WriteLine("Invalid Creator Type");
+            }
+
+
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var jsonContent = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions()
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            var result = JsonSerializer.Deserialize<GameListResponse>(jsonContent, options);
+
+            return result.Games;
         }
     }
 }

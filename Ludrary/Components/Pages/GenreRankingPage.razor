@@ -1,0 +1,130 @@
+﻿@inject RawgApiService RawgApi
+@page "/genres/{GenreSlug}"
+<PageTitle>Best @GenreSlug Games</PageTitle>
+
+@if (isLoading == true)
+{
+	<p class="text-center">Loading</p>
+}else if (string.IsNullOrEmpty(GenreSlug))
+{
+	<p class="alert alert-danger">@_errorMessage</p>
+}
+else
+{
+    <div class="genre-ranking-page">
+        <h1>Best @GenreSlug Games</h1>
+        <hr />
+
+        <section class="ranking-section">
+            <h2>Of All Time</h2>
+            @if (bestOfAll != null && bestOfAll.Any())
+            {
+                <div class="game-grid">
+                    @foreach (var game in bestOfAll)
+                    {
+                        <GameCard Game="game" />
+                    }
+                </div>
+            }
+            else
+            {
+                <p>No games found in this category.</p>
+            }
+        </section>
+
+        <section class="ranking-section">
+            <h2>Of the 2010s</h2>
+            @if (bestOf10s != null && bestOf10s.Any())
+            {
+                <div class="game-grid">
+                    @foreach (var game in bestOf10s)
+                    {
+                        <GameCard Game="game" />
+                    }
+                </div>
+            }
+            else
+            {
+                <p>No games found for the 2010s.</p>
+            }
+        </section>
+
+        <section class="ranking-section">
+            <h2>Of the 2020s</h2>
+            @if (bestOf20s != null && bestOf20s.Any())
+            {
+                <div class="game-grid">
+                    @foreach (var game in bestOf20s)
+                    {
+                        <GameCard Game="game" />
+                    }
+                </div>
+            }
+            else
+            {
+                <p>No games found for the 2020s.</p>
+            }
+        </section>
+
+    </div>
+}
+
+
+@code {
+	[Parameter]
+	public string GenreSlug { get; set; }
+
+	private List<Game> bestOfAll { get; set; }
+	private List<Game> bestOf10s { get; set; }
+	private List<Game> bestOf20s { get; set; }
+
+	private bool isLoading = true;
+
+	private string _errorMessage = "";
+    
+
+    protected override async Task OnParametersSetAsync()
+	{
+        isLoading = true;
+        _errorMessage = null;
+        StateHasChanged();
+		try
+		{
+			var allTimeParams = new SearchParameters
+				{
+					GenreSlug = this.GenreSlug,
+					Ordering = "-metacritic"
+				};
+			bestOfAll = await RawgApi.SearchGamesAsync(allTimeParams);
+
+			var decade2010params = new SearchParameters
+				{
+					GenreSlug = this.GenreSlug,
+					Ordering = "-metacritic",
+					StartYear = 2010,
+					EndYear = 2019
+				};
+			bestOf10s = await RawgApi.SearchGamesAsync(decade2010params);
+
+			var decade2020params = new SearchParameters
+			{
+				GenreSlug = this.GenreSlug,
+				Ordering = "-metacritic",
+				StartYear = 2020,
+				EndYear = 2029
+			};
+			bestOf20s = await RawgApi.SearchGamesAsync(decade2020params);
+
+		}
+		catch (Exception ex)
+		{
+			_errorMessage = $"Failed to load rankings: {ex.Message}";
+		}
+		finally
+		{
+			isLoading = false;
+		}
+	}
+
+
+}

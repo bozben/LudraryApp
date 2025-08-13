@@ -8,23 +8,79 @@
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="flex-column">
+
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+                Home
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="upcoming">
+                Upcoming
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
+        <hr />
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
+            <div class="nav-link" @onclick="ToggleGenresMenu" style="cursor: pointer;">
+                Best of Genres
+            </div>
+
+            @if (genresMenuExpanded)
+            {
+                <div class="genre-submenu">
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="genres/action">Action</NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="genres/indie">Indie</NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="genres/adventure">Adventure</NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="genres/role-playing-games-rpg">RPG</NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="genres/strategy">Strategy</NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="genres/shooter">Shooter</NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="genres/simulation">Simulation</NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="genres/arcade">Arcade</NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="genres/platformer">Platformer</NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="genres/massively-multiplayer">MMO</NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="genres/racing">Racing</NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="genres/sports">Sports</NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="genres/fighting">Fighting</NavLink>
+                    </div>
+                </div>
+            }
         </div>
+
     </nav>
 </div>
 
+@code {
+    private bool genresMenuExpanded = false;
+
+    private void ToggleGenresMenu()
+    {
+        genresMenuExpanded = !genresMenuExpanded;
+    }
+}

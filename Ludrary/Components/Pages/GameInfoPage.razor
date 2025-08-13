@@ -29,7 +29,7 @@ else
 				<p><strong>Metacritic Score:</strong> <span class="metacritic-score @GetMetacriticClass(gameInfo.Metacritic.Value)">@gameInfo.Metacritic</span></p>
 			}
 			<hr />
-			<p><strong>Developers:</strong> @GetDevoloperNames()</p>
+			<p><strong>Developers:</strong> @((MarkupString)GetDeveloperNames())</p>
 			<p><strong>Genres:</strong> @GetGenreNames()</p>
 			<p><strong>Platforms:</strong> @GetPlatformNames()</p>
 			<p><strong>Tags:</strong> @GetTagNames()</p>
@@ -86,16 +86,24 @@ else
 		}
 	}
 
-	private string GetDevoloperNames()
+	private string GetDeveloperNames()
 	{
-		List<string> devoloperNames = new();
+		var devoloperLinks = new List<string>();
 		if(gameInfo.Developers != null && gameInfo.Developers.Any())
 		{
 			foreach(var dev in gameInfo.Developers)
 			{
-				devoloperNames.Add(dev.Name);
+				if (!string.IsNullOrEmpty(dev.Slug))
+				{
+					devoloperLinks.Add($"<a href=\"/creator/developers/{dev.Slug}\">{dev.Name}</a>");
+				}
+				else
+				{
+					devoloperLinks.Add(dev.Name);
+				}
 			}
-			return string.Join(", ", devoloperNames);
+			return string.Join(", ", devoloperLinks);
+			
 		}
 		else
 		{
