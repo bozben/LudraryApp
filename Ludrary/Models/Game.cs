@@ -3,10 +3,18 @@ using System.Text.Json.Serialization;
 
 namespace Ludrary.Models
 {
+    public class ShortScreenshot
+    {
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
+
+        [JsonPropertyName("image")]
+        public string ImageUrl { get; set; }
+    }
     public class Game
     {
         [JsonPropertyName("id")]
-        public int Id { get; set; } = new();
+        public int Id { get; set; }
         [JsonPropertyName("name")]
         public string Name { get; set; }
         [JsonPropertyName("background_image")]
@@ -15,6 +23,8 @@ namespace Ludrary.Models
         public int? Metacritic { get; set; }
         [JsonPropertyName("tags")]
         public List<Tag> Tags { get; set; }
-
+        [JsonPropertyName("short_screenshots")]
+        public List<ShortScreenshot> ShortScreenshots { get; set; }
+        
     }
 }

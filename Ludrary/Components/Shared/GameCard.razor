@@ -1,13 +1,18 @@
 ﻿@inject StaticDataService StaticData
-<div class="game-card" @onclick="NavigateToInfoPage">
-	<img class="game-card-image" src="@Game.BackgroundImage" alt="@Game.Name" />
+
+
+<div class="game-card" 
+@onclick="NavigateToInfoPage"
+@onmouseenter="StartSlideShow"
+@onmouseleave="StopSlideShow">
+	<img class="game-card-image" src="@_currentImageUrl" alt="@Game.Name" />
 	<div class="game-card-body">
 		<h5 class="game-card-title">@Game.Name</h5>
 		@if (Game.Metacritic.HasValue)
 		{
 			<span class="metacritic-score">@Game.Metacritic</span>
 		}
-		@if (Game.Tags.Any() && Game.Tags!= null)
+		@if (Game.Tags != null && Game.Tags.Any())
 		{
 			<div class="game-tags">
 				@{
@@ -38,6 +43,52 @@
 
 	[Parameter]
 	public Game Game { get; set; }
+
+	private string _currentImageUrl;
+	private Timer _screenshotTimer;
+	private int _screenshotIndex = 0;
+
+	protected override void OnInitialized()
+	{
+		_currentImageUrl = Game.BackgroundImage;
+	}
+	private void ChangeScreenshot()
+	{
+		_screenshotIndex++;
+		if (_screenshotIndex >= Game.ShortScreenshots.Count)
+		{
+			_screenshotIndex = 0;
+		}
+
+		_currentImageUrl = Game.ShortScreenshots[_screenshotIndex].ImageUrl;
+
+		InvokeAsync(StateHasChanged);
+	}
+
+	private void StartSlideShow()
+	{
+		if(Game.ShortScreenshots == null || Game.ShortScreenshots.Count <=1)
+		{
+			return;
+		}
+
+		_screenshotTimer = new Timer(1000);
+		_screenshotTimer.Elapsed += (sender, e) => ChangeScreenshot();
+		_screenshotTimer.AutoReset = true;
+		_screenshotTimer.Enabled = true;
+
+		ChangeScreenshot();
+
+	}
+
+	private void StopSlideShow()
+	{
+		_screenshotTimer?.Stop();
+		_screenshotTimer?.Dispose();
+
+		_currentImageUrl = Game.BackgroundImage;
+		StateHasChanged(); 
+	}
 
 	private void NavigateToInfoPage()
 	{

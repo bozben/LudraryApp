@@ -69,8 +69,11 @@ else
 	private bool _isLoading = true;
 	private List<Game> gamesInSeries = new();
 
-	protected override async Task OnInitializedAsync()
+	protected override async Task OnParametersSetAsync()
 	{
+		errorMessage = null;
+		_isLoading = true;
+		StateHasChanged();
 		try
 		{
 			gameInfo = await RawgApi.GetGameInfoAsync(Id);

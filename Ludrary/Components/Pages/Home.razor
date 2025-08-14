@@ -7,26 +7,42 @@
 
 <hr/>
 
-@if (_isLoading==true)
+@if (_isLoading)
 {
-    <p>Loading Games</p>
-}else{
+    <p>Loading Games...</p>
+}
+else if (!games.Any()) 
+{
+    <div class="no-results">
+        <h3>No Games Found</h3>
+        <p>Your search returned no results. Try adjusting your filters.</p>
+    </div>
+}
+else
+{
     <div class="game-grid">
-        @foreach(var game in games)
-        {            
-            <GameCard Game="game"/>
+        @foreach (var game in games)
+        {
+            <GameCard Game="game" />
         }
-
-    </div>  
-    @if (games.Count >0 && games.Count!=null)
+    </div>
+    @if (games.Any())
     {
         <div class="mt-4 text-center">
-            <button type="button" @onclick="LoadMore" class="btn btn-success">
-                Load More
-            </button>
+            @if (_isLoadMore)
+            {
+                <div class="spinner-border text-success" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            }
+            else
+            {
+                <button type="button" @onclick="LoadMore" class="btn btn-success">
+                    Load More
+                </button>
+            }
         </div>
-        
-    }
+            } 
 }
 
 
@@ -34,6 +50,7 @@
     private SearchParameters _searchParameters = new();
     private int _currentPage = 1;
     private bool _isLoading = true;
+    private bool _isLoadMore = false;
     List<Game> games = new();
 
 
@@ -72,7 +89,7 @@
 
     private async Task LoadMore()
     {
-        _isLoading = true;
+        _isLoadMore = true;
         _currentPage++;
         List<Game> newGames;
         try
@@ -82,7 +99,7 @@
         }
         finally
         {
-            _isLoading = false;
+            _isLoadMore = false;
 
         }
 
