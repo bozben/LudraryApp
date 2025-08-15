@@ -1,23 +1,82 @@
 ﻿@inherits LayoutComponentBase
+@inject IJSRuntime JSRuntime
+<div class="particles" id="particles"></div>
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<header>
+    <a href="" class="logo">
+        <i class="fas fa-gamepad logo-icon"></i>
+        Ludrary 
+    </a>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+    <NavMenu />
+</header>
+
+<main>
+    @Body
+</main>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-column">
+            <h3>Ludrary</h3>
+            <p>Explore the game universe. Find your favorites from thousands of games.</p>
+            
         </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+        <div class="footer-column">
+            <h3>Quick Links</h3>
+            <ul class="footer-links">
+                <li><a href="">Homepage</a></li>
+                <li><a href="upcoming">Upcoming Games</a></li>
+            </ul>
+        </div>
 
-<div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
-</div>
+        <div class="footer-column">
+            <h3>Genres</h3>
+            <div class="footer-categories">
+                <ul class="footer-links">
+                    <li><a href="genres/action">Action</a></li>
+                    <li><a href="genres/indie">Indie</a></li>
+                    <li><a href="genres/adventure">Adventure</a></li>
+                    <li><a href="genres/role-playing-games-rpg">RPG</a></li>
+                    <li><a href="genres/strategy">Strategy</a></li>
+                    <li><a href="genres/shooter">Shooter</a></li>
+                </ul>
+                <ul class="footer-links">
+                    <li><a href="genres/simulation">Simulation</a></li>
+                    <li><a href="genres/arcade">Arcade</a></li>
+                    <li><a href="genres/platformer">Platformer</a></li>
+                    <li><a href="genres/massively-multiplayer">MMO</a></li>
+                    <li><a href="genres/racing">Racing</a></li>
+                    <li><a href="genres/fighting">Fighting</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-column">
+            <h3>Support</h3>
+            <ul class="footer-links">
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="copyright">
+        &copy; @DateTime.Now.Year Ludrary. 
+    </div>
+</footer>
+
+@code {
+    private bool _jsInitialized = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_jsInitialized)
+        {
+            await JSRuntime.InvokeVoidAsync("createParticles");
+            await JSRuntime.InvokeVoidAsync("initializeHeaderScrollEffect");
+            _jsInitialized = true;
+        }
+    }
+}

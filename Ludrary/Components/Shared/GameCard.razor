@@ -1,38 +1,60 @@
 ﻿@inject StaticDataService StaticData
 
-
 <div class="game-card" 
-@onclick="NavigateToInfoPage"
-@onmouseenter="StartSlideShow"
-@onmouseleave="StopSlideShow">
-	<img class="game-card-image" src="@_currentImageUrl" alt="@Game.Name" />
-	<div class="game-card-body">
-		<h5 class="game-card-title">@Game.Name</h5>
-		@if (Game.Metacritic.HasValue)
-		{
-			<span class="metacritic-score">@Game.Metacritic</span>
-		}
+	 @onclick="NavigateToInfoPage"
+	 @onmouseenter="StartSlideShow"
+	 @onmouseleave="StopSlideShow">
+
+	<div class="game-img-container">
+		<img src="@_currentImageUrl" alt="@Game.Name" class="game-img">
+	</div>
+
+
+	<div class="game-content">
+		<h3 class="game-title">@Game.Name</h3>
+
+		<div class="game-meta">
+			@if (Game.Metacritic.HasValue)
+			{
+				<span class="metacritic-score @GetMetacriticClass(Game.Metacritic.Value)">
+					@Game.Metacritic
+				</span>
+			}
+			@if (!string.IsNullOrEmpty(Game.Released))
+			{
+				<span class="release-date">
+					@DateTime.Parse(Game.Released).ToString("dd MMM yyyy")
+				</span>
+			}
+		</div>
+
 		@if (Game.Tags != null && Game.Tags.Any())
 		{
 			<div class="game-tags">
-				@{
-					int tagsToShow = 0;
-					@foreach (var tag in Game.Tags)
-					{
-						if(StaticData.IsTagSelected(tag.Id) && tagsToShow < 3)
-						{
-							<span class="tag">@tag.Name</span>
-							tagsToShow++;
-						}
-					}
+				@foreach (var tag in Game.Tags.Where(t => StaticData.IsTagSelected(t.Id)).Take(3))
+				{
+					<span class="game-tag">@tag.Name</span>
 				}
-				
 			</div>
 		}
-		
-		
+
+		@if (Game.Stores != null && Game.Stores.Any())
+		{
+			<div class="game-stores">
+				@foreach (var storeEntry in Game.Stores)
+				{
+					var iconClass = GetStoreIcon(storeEntry.Store.Slug);
+
+					@if (!string.IsNullOrEmpty(iconClass))
+					{
+						<span class="store-icon @iconClass"></span>
+					}
+				}
+			</div>
+		}
 	</div>
 </div>
+
 	
 
 
@@ -52,6 +74,13 @@
 	{
 		_currentImageUrl = Game.BackgroundImage;
 	}
+	private string GetMetacriticClass(int score)
+	{
+		if (score >= 75) return "metacritic-high";
+		if (score >= 50) return "metacritic-medium";
+		return "metacritic-low";
+	}
+
 	private void ChangeScreenshot()
 	{
 		_screenshotIndex++;
@@ -93,6 +122,21 @@
 	private void NavigateToInfoPage()
 	{
 		NavigationManager.NavigateTo($"/game/{Game.Id}");
+	}
+	private string GetStoreIcon(string slug)
+	{
+		return slug switch
+		{
+			"steam" => "fab fa-steam",
+			"playstation-store" => "fab fa-playstation",
+			"xbox-store" => "fab fa-xbox",
+			"nintendo" => "fas fa-gamepad",
+			"gog" => "fas fa-database", 
+			"epic-games" => "fas fa-epic-games",
+			"google-play" => "fab fa-google-play",
+			"apple-appstore" => "fab fa-app-store-ios",
+			_ => "" 
+		};
 	}
 
 

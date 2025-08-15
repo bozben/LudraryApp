@@ -12,5 +12,7 @@ namespace Ludrary.Models
 
         [JsonPropertyName("slug")]
         public string Slug{ get; set; }
+        [JsonPropertyName("description")]
+        public string Description { get; set; }
     }
 }

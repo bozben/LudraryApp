@@ -1,72 +1,72 @@
 ﻿@inject RawgApiService RawgApi
 @page "/genres/{GenreSlug}"
-<PageTitle>Best @GenreSlug Games</PageTitle>
+<PageTitle>Best @GenreSlug.Replace("-", " ").ToUpper() Games</PageTitle>
 
-@if (isLoading == true)
+@if (isLoading)
 {
-	<p class="text-center">Loading</p>
-}else if (string.IsNullOrEmpty(GenreSlug))
+	<LoadingSpinner />
+}
+else if(!string.IsNullOrEmpty(_errorMessage))
 {
 	<p class="alert alert-danger">@_errorMessage</p>
 }
 else
 {
-    <div class="genre-ranking-page">
-        <h1>Best @GenreSlug Games</h1>
-        <hr />
+	<div class="list-page-container">
+		<section class="list-hero">
+			<h1 class="list-title">
+				BEST @GenreSlug.Replace("-", " ").ToUpper() GAMES
+			</h1>
+			<p class="list-description">
+				@((MarkupString)_genreDescription)
+			</p>
+		</section>
 
-        <section class="ranking-section">
-            <h2>Of All Time</h2>
-            @if (bestOfAll != null && bestOfAll.Any())
-            {
-                <div class="game-grid">
-                    @foreach (var game in bestOfAll)
-                    {
-                        <GameCard Game="game" />
-                    }
-                </div>
-            }
-            else
-            {
-                <p>No games found in this category.</p>
-            }
-        </section>
+		@if (bestOfAll != null && bestOfAll.Any())
+		{
+			<section class="ranking-section">
+				<div class="section-header">
+					<h2 class="section-title">Of All Time</h2>
+				</div>
+				<div class="games-grid">
+					@foreach (var game in bestOfAll)
+					{
+						<GameCard Game="game" />
+					}
+				</div>
+			</section>
+		}
 
-        <section class="ranking-section">
-            <h2>Of the 2010s</h2>
-            @if (bestOf10s != null && bestOf10s.Any())
-            {
-                <div class="game-grid">
-                    @foreach (var game in bestOf10s)
-                    {
-                        <GameCard Game="game" />
-                    }
-                </div>
-            }
-            else
-            {
-                <p>No games found for the 2010s.</p>
-            }
-        </section>
+		@if (bestOf20s != null && bestOf20s.Any())
+		{
+			<section class="ranking-section">
+				<div class="section-header">
+					<h2 class="section-title">Of the 2020s</h2>
+				</div>
+				<div class="games-grid">
+					@foreach (var game in bestOf20s)
+					{
+						<GameCard Game="game" />
+					}
+				</div>
+			</section>
+		}
 
-        <section class="ranking-section">
-            <h2>Of the 2020s</h2>
-            @if (bestOf20s != null && bestOf20s.Any())
-            {
-                <div class="game-grid">
-                    @foreach (var game in bestOf20s)
-                    {
-                        <GameCard Game="game" />
-                    }
-                </div>
-            }
-            else
-            {
-                <p>No games found for the 2020s.</p>
-            }
-        </section>
-
-    </div>
+		@if (bestOf10s != null && bestOf10s.Any())
+		{
+			<section class="ranking-section">
+				<div class="section-header">
+					<h2 class="section-title">Of the 2010s</h2>
+				</div>
+				<div class="games-grid">
+					@foreach (var game in bestOf10s)
+					{
+						<GameCard Game="game" />
+					}
+				</div>
+			</section>
+		}
+	</div>
 }
 
 
@@ -81,13 +81,14 @@ else
 	private bool isLoading = true;
 
 	private string _errorMessage = "";
-    
+	private string _genreDescription;
 
-    protected override async Task OnParametersSetAsync()
+
+	protected override async Task OnParametersSetAsync()
 	{
-        isLoading = true;
-        _errorMessage = null;
-        StateHasChanged();
+		isLoading = true;
+		_errorMessage = null;
+		StateHasChanged();
 		try
 		{
 			var allTimeParams = new SearchParameters
@@ -114,6 +115,12 @@ else
 				EndYear = 2029
 			};
 			bestOf20s = await RawgApi.SearchGamesAsync(decade2020params);
+
+			var genreDetails = await RawgApi.GetGenreDetailsAsync(GenreSlug);
+			if (genreDetails != null)
+			{
+				_genreDescription = genreDetails.Description;
+			}
 
 		}
 		catch (Exception ex)

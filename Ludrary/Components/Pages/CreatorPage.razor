@@ -1,33 +1,61 @@
 ﻿@inject RawgApiService RawgApi
 @page "/creator/{CreatorType}/{CreatorSlug}"
 
-<PageTitle>Games by @CreatorSlug</PageTitle>
-<h1>Games by @CreatorSlug</h1>
+<PageTitle>Games by @CreatorSlug.Replace("-", " ")</PageTitle>
 
-<hr />
 
 @if (_isLoading == true)
 {
-    <p>Loading Games</p>
+    <LoadingSpinner />
+}
+else if (!games.Any())
+{
+    <div class="no-results-container">
+        <h3>No Games Found</h3>
+        <p>No games were found for this creator.</p>
+    </div>
 }
 else
 {
-    <div class="game-grid">
-        @foreach (var game in games)
-        {
-            <GameCard Game="game" />
-        }
+    <div class="list-page-container">
 
+        <section class="list-hero">
+            <h1 class="list-title">GAMES BY @CreatorSlug.Replace("-", " ").ToUpper()</h1>
+            <p class="list-description">
+                Browse through the collection of games from  @CreatorSlug.Replace("-", " ").ToUpper()
+            </p>
+        </section>
+        
+
+        <section class="game-list-section">
+            <div class="games-grid">
+                @foreach (var game in games)
+                {
+                    <GameCard Game="game" />
+                }
+            </div>
+
+            @if (games.Any())
+            {
+                <div class="load-more-container">
+                    @if (_isLoadMoreLoading)
+                    {
+                        <div class="load-more-spinner">
+                            <div class="spinner-border text-warning" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <button type="button" @onclick="LoadMore" class="load-more-btn">
+                            Load More
+                        </button>
+                    }
+                </div>
+            }
+        </section>
     </div>
-    @if (games.Count > 0 && games.Count != null)
-    {
-        <div class="mt-4 text-center">
-            <button type="button" @onclick="LoadMore" class="btn btn-success">
-                Load More
-            </button>
-        </div>
-
-    }
 }
 
 
@@ -35,18 +63,24 @@ else
     private SearchParameters _searchParameters = new();
     private int _currentPage = 1;
     private bool _isLoading = true;
+    private bool _isLoadMoreLoading = false;
+
+
     List<Game> games = new();
     [Parameter]
     public string CreatorSlug { get; set; }
     [Parameter]
     public string CreatorType { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-
+        _isLoading = true;
+        _currentPage = 1; 
+        games.Clear(); 
+        StateHasChanged();
         try
         {
-            games = await RawgApi.GetGamesByCreatorAsync(CreatorSlug,CreatorType,_currentPage);
+            games = await RawgApi.GetGamesByCreatorAsync(CreatorSlug, CreatorType, _currentPage);
         }
         catch (Exception ex)
         {
@@ -60,7 +94,7 @@ else
 
     private async Task LoadMore()
     {
-        _isLoading = true;
+        _isLoadMoreLoading = true;
         _currentPage++;
         List<Game> newGames;
         try
@@ -70,11 +104,10 @@ else
         }
         finally
         {
-            _isLoading = false;
+            _isLoadMoreLoading = false;
 
         }
 
     }
-
 
 }

@@ -1,68 +1,125 @@
-﻿.filter-panel{
-    display:grid;
-    grid-template-columns:1fr 1fr 1fr;
-    gap:1.5rem;
-    margin-bottom:1.5rem;
-}
-
-.genre-group,.platform-group,.tag-group{
-    border:1px solid #ccc;
-    border-radius:8px;
-    padding:1rem;
-}
-    .genre-group h5, .platform-group h5, .tag-group h5 {
-        margin-top: 0;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 0.5rem;
-        margin-bottom: 0.5rem;
-    }
-.checkbox-list {
-    max-height: 250px;
-    overflow-y: auto;
-    / Dikey kaydırma çubuğu / padding-right: 10px;
-    / Kaydırma çubuğu metne yapışmasın diye */
-}
-.search-bar {
-    display: flex; 
-    flex-wrap: wrap; 
+﻿.advanced-filter-layout {
+    display: flex;
+    flex-direction: column;
     gap: 1.5rem; 
-    align-items: flex-end; 
-    padding: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(30, 30, 30, 0.6);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 215, 0, 0.1);
+    backdrop-filter: blur(8px);
+    margin-bottom: 2rem; 
 }
 
-    .search-bar > div {
-        display: flex;
-        flex-direction: column; 
-        gap: 0.25rem;
+.filter-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+    .filter-panel h5 {
+        font-family: 'Orbitron', sans-serif;
+        color: var(--gold);
+        margin-top: 0;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+        padding-bottom: 0.75rem;
+        text-transform: uppercase;
     }
 
-    .search-bar label {
-        font-weight: 500;
-        font-size: 0.9rem;
-    }
+.checkbox-list {
+    max-height: 250px; 
+    overflow-y: auto;
+    padding-right: 10px;
+}
 
-.year-inputs {
+.tag-columns {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.tag-column h6 {
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+}
+
+.filter-divider {
+    border: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 0;
+}
+
+
+.range-filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.filter-group h5 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    font-size: 1em; 
+}
+
+.range-inputs {
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-.search-button-group {
-    margin-left: auto;
-}
-.filter-logic-notice {
-    margin-top: 0.75rem;
-    padding: 0.5rem;
-    background-color: #f8f9fa; 
-    border: 1px solid #e9ecef;
+.range-filters .form-control,
+.range-filters .form-select {
+    background-color: var(--dark);
+    color: var(--text);
+    border: 1px solid var(--light-gray);
     border-radius: 6px;
-    font-size: 0.85rem; 
-    color: #6c757d; 
+    padding: 0.75rem;
+    width: 100%;
 }
 
-    .filter-logic-notice strong {
-        color: #495057; 
+
+.filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+
+.btn-primary, .btn-reset {
+    border-radius: 50px;
+    padding: 10px 30px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Orbitron', sans-serif;
+    text-transform: uppercase;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--gold), #d4af37);
+    color: var(--dark);
+    border: none;
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
+}
+
+    .btn-primary:hover {
+        transform: scale(1.05);
+    }
+
+.btn-reset {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--text-secondary);
+}
+
+    .btn-reset:hover {
+        color: var(--text);
+        border-color: var(--text);
     }

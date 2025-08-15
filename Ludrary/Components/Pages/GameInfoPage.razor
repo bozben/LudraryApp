@@ -7,8 +7,7 @@
 
 @if (_isLoading==true)
 {
-	<p>Loading Games</p>
-
+	<LoadingSpinner />
 }
 else if (!string.IsNullOrEmpty(errorMessage))
 {
@@ -16,44 +15,102 @@ else if (!string.IsNullOrEmpty(errorMessage))
 }
 else
 {
-	<div class="game-info-grid">
+	<div class="game-detail-container">
+		<section class="game-hero">
+			<div class="game-cover">
+				<img src="@gameInfo.BackgroundImage" alt="@gameInfo.Name" />
+			</div>
 
-		<div class="game-image-container">
-			<img src="@gameInfo.BackgroundImage" class="img-fluid" alt="@gameInfo.Name" />
-		</div>
+			<div class="game-header">
+				<h1 class="game-title">@gameInfo.Name</h1>
 
-		<div class="game-info-container">
-			<h1>@gameInfo.Name</h1>
-			@if (gameInfo.Metacritic.HasValue)
-			{
-				<p><strong>Metacritic Score:</strong> <span class="metacritic-score @GetMetacriticClass(gameInfo.Metacritic.Value)">@gameInfo.Metacritic</span></p>
-			}
-			<hr />
-			<p><strong>Developers:</strong> @((MarkupString)GetDeveloperNames())</p>
-			<p><strong>Genres:</strong> @GetGenreNames()</p>
-			<p><strong>Platforms:</strong> @GetPlatformNames()</p>
-			<p><strong>Tags:</strong> @GetTagNames()</p>
-			<p><strong>Website:</strong> <a href="@gameInfo.Website" target="_blank">@gameInfo.Website</a></p>
-		</div>
-
-
-		<div class="game-description-container">
-			<h3>Description</h3>
-			<p>@gameInfo.Description</p>
-		</div>
-
-		@if (gamesInSeries.Any())
-		{
-			<div class="game-grid">
-				<h3>More From This Series</h3>
-				@foreach(var game in gamesInSeries)
+				@if (gameInfo.Metacritic.HasValue)
 				{
-					@if (game.Id != gameInfo.Id)
-					{
-						<GameCard Game="game" />
-					}
+					<div class="game-rating">
+						<div class="rating-value @GetMetacriticClass(gameInfo.Metacritic.Value)">@gameInfo.Metacritic.Value</div>
+						<div class="rating-label">Metacritic Score</div>
+					</div>
 				}
 			</div>
+		</section>
+
+		<section class="game-details">
+			<div class="game-description">
+				<h2 class="section-title">About @gameInfo.Name</h2>
+				<p>@((MarkupString)gameInfo.Description.Replace("\n", "<br/>"))</p>
+			</div>
+
+			<div class="game-info">
+                <div class="info-item">
+                    <div class="info-label">Developers</div>
+					<div class="info-value">@((MarkupString)GetDeveloperNames())</div>
+                </div>
+
+				@if (gameInfo.Publishers != null && gameInfo.Publishers.Any())
+				{
+					<div class="info-item">
+						<div class="info-label">Publishers</div>
+						<div class="info-value">@((MarkupString)GetPublisherNames())</div>
+					</div>
+				}
+
+				@if (!string.IsNullOrEmpty(gameInfo.Released))
+				{
+					<div class="info-item">
+						<div class="info-label">Release Date</div>
+						<div class="info-value">@DateTime.Parse(gameInfo.Released).ToString("dd MMMM yyyy")</div>
+					</div>
+				}<div class="info-item">
+                    <div class="info-label">Platforms</div>
+                    <div class="info-value">@GetPlatformNames()</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Genres</div>
+                    <div class="info-value">@GetGenreNames()</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Tags</div>
+                    <div class="game-tags">
+                        @foreach (var tag in gameInfo.Tags.Where(t => StaticData.IsTagSelected(t.Id)))
+                        {
+                            <span class="game-tag">@tag.Name</span>
+                        }
+                    </div>
+				</div>
+			</div>
+		</section>
+
+		
+		@if (gameInfo.ShortScreenshots != null && gameInfo.ShortScreenshots.Count > 1)
+		{
+			<section class="screenshots-section">
+				<h2 class="section-title">Screenshots</h2>
+				<div class="screenshots-grid">
+					@foreach (var screenshot in gameInfo.ShortScreenshots.Skip(1))
+					{
+						<div class="screenshot-item">
+							<img src="@screenshot.ImageUrl" alt="@gameInfo.Name Screenshot">
+						</div>
+					}
+				</div>
+			</section>
+		}
+		@if (gamesInSeries != null && gamesInSeries.Any())
+		{
+			<section class="series-section">
+				<h2 class="section-title">More From This Series</h2>
+				<div class="games-grid">
+					@foreach (var game in gamesInSeries)
+					{
+						if (game.Id != gameInfo.Id)
+						{
+							<GameCard Game="game" />
+						}
+					}
+				</div>
+			</section>
 		}
 		
 	</div>
@@ -106,7 +163,7 @@ else
 				}
 			}
 			return string.Join(", ", devoloperLinks);
-			
+
 		}
 		else
 		{
@@ -181,6 +238,30 @@ else
 			result = "metacritic-low";
 		}
 		return result;
+	}
+	private string GetPublisherNames()
+	{
+		var publisherLinks = new List<string>();
+
+		if(gameInfo.Publishers !=null && gameInfo.Publishers.Any())
+		{
+			foreach (var pub in gameInfo.Publishers)
+			{
+				if (!string.IsNullOrEmpty(pub.Slug))
+				{
+					publisherLinks.Add($"<a href=\"/creator/publishers/{pub.Slug}\">{pub.Name}</a>");
+				}
+				else
+				{
+					publisherLinks.Add(pub.Name);
+				}	
+			}
+			return string.Join(", ", publisherLinks);
+		}
+		else
+		{
+			return "Not available";
+		}
 	}
 
 

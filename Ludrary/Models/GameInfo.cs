@@ -19,11 +19,20 @@ namespace Ludrary.Models
         [JsonPropertyName("background_image")]
         public string BackgroundImage { get; set; }
 
+        [JsonPropertyName("released")]
+        public string Released { get; set; }
+
         [JsonPropertyName("website")]
         public string Website { get; set; }
 
         [JsonPropertyName("developers")]
         public List<DetailDevolopers> Developers { get; set; }
+
+        [JsonPropertyName("publishers")]
+        public List<DetailPublisher> Publishers { get; set; }
+
+        [JsonPropertyName("short_screenshots")]
+        public List<ShortScreenshot> ShortScreenshots { get; set; }
 
         [JsonPropertyName("platforms")]
         public List<DetailPlatformEntry> Platforms { get; set; }
@@ -48,6 +57,13 @@ namespace Ludrary.Models
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }
+    }
+    public class DetailPublisher
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+        [JsonPropertyName("slug")]
+        public string Slug { get; set; }
     }
 
 

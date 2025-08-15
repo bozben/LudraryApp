@@ -11,5 +11,7 @@
         public int? StartYear { get; set; }
         public int? EndYear { get; set; }
         public string GenreSlug { get; set; }
+        public int? MinMetacritic { get; set; }
+        public int? MaxMetacritic { get; set; }
     }
 }

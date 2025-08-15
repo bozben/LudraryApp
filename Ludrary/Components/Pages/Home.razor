@@ -1,58 +1,109 @@
-﻿@inject RawgApiService RawgApi
-@page "/"
+﻿@page "/"
+@inject RawgApiService RawgApi
 
-<PageTitle>Home</PageTitle>
-<h1>Ludrary</h1>
-<GameFilter OnSearchClicked="HandleSearch"/>
+<PageTitle>Ludrary - Game Recommendation Engine</PageTitle>
 
-<hr/>
+<section class="hero">
+    <h1>Explore Gaming World</h1>
+    <p>Explore the game universe. Find your favorites from thousands of games.With Ludrary, the doors of the game world open up to you!</p>
+</section>
 
-@if (_isLoading)
-{
-    <p>Loading Games...</p>
-}
-else if (!games.Any()) 
-{
-    <div class="no-results">
-        <h3>No Games Found</h3>
-        <p>Your search returned no results. Try adjusting your filters.</p>
+<section class="search-container">
+    <div class="search-box">
+        <input type="text"
+               class="search-input"
+               placeholder="Enter a game name..."
+               @bind="_searchParameters.SearchText"
+               @bind:event="oninput" /> 
+
+        <button class="search-btn" @onclick="() => HandleSearch(_searchParameters)">
+            <i class="fas fa-search"></i> SEARCH
+        </button>
     </div>
-}
-else
-{
-    <div class="game-grid">
-        @foreach (var game in games)
-        {
-            <GameCard Game="game" />
-        }
-    </div>
-    @if (games.Any())
-    {
-        <div class="mt-4 text-center">
-            @if (_isLoadMore)
+
+    <div class="advanced-filter-toggle">
+        <a @onclick="ToggleAdvancedFilter">
+            @if (_advancedFilterVisible)
             {
-                <div class="spinner-border text-success" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
+                <span><i class="fas fa-chevron-up"></i> Hide Advanced Filters</span>
             }
             else
             {
-                <button type="button" @onclick="LoadMore" class="btn btn-success">
-                    Load More
-                </button>
+                <span><i class="fas fa-chevron-down"></i> Show Advanced Filters</span>
             }
-        </div>
-            } 
+        </a>
+    </div>
+</section>
+
+@if (_advancedFilterVisible)
+{
+    <GameFilter SearchParameters="_searchParameters" OnSearchClicked="HandleSearch" />
+    <div class="filter-logic-notice">
+        <p><strong>Genre</strong> and <strong>platform</strong> filters use an <strong>OR</strong> algorithm, meaning games with at least one selected item will appear. <strong>Tags</strong>, however, use an <strong>AND</strong> algorithm, so a game must have <strong>all</strong> selected tags to be shown.</p>
+    </div>
 }
 
+<section class="results-section">
+    <hr />
+    <div class="sorting-container">
+        <label for="ordering-select">Sort by:</label>
+        <select id="ordering-select"
+                class="form-select"
+                @bind="_searchParameters.Ordering" 
+                @bind:after="HandleOrderingChangeAsync"> 
+            <option value="">Relevance</option>
+            <option value="-released">Newest</option>
+            <option value="-metacritic">Highest Score</option>
+            <option value="name">Name (A-Z)</option>
+        </select>
+    </div>
 
-@code{
+    @if (_isInitialLoading)
+    {
+        <LoadingSpinner />
+    }
+    else if (!games.Any())
+    {
+        <div class="no-results">
+            <h3>No Games Found</h3>
+            <p>Your search returned no results. Try adjusting your filters.</p>
+        </div>
+    }
+    else
+    {
+        <div class="games-grid">
+            @foreach (var game in games)
+            {
+                <GameCard Game="game" />
+            }
+        </div>
+        @if (games.Any())
+        {
+            <div class="load-more-container">
+                @if (_isLoadMoreLoading)
+                {
+                    <LoadingSpinner />
+                }
+                else
+                {
+                    <button type="button" @onclick="LoadMore" class="load-more-btn">
+                        Load More
+                    </button>
+                }
+            </div>
+        }
+    }
+</section>
+
+
+@code {
     private SearchParameters _searchParameters = new();
     private int _currentPage = 1;
-    private bool _isLoading = true;
-    private bool _isLoadMore = false;
-    List<Game> games = new();
+    private bool _isInitialLoading = true;
+    private bool _isLoadMoreLoading = false;
+    private List<Game> games = new();
 
+    private bool _advancedFilterVisible = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -66,13 +117,13 @@ else
         }
         finally
         {
-            _isLoading = false;
+            _isInitialLoading = false;
         }
     }
 
     private async Task HandleSearch(SearchParameters parameters)
     {
-        _isLoading = true;
+        _isInitialLoading = true;
         _searchParameters = parameters;
         _currentPage = 1;
         try
@@ -82,14 +133,14 @@ else
         }
         finally
         {
-            _isLoading = false;
+            _isInitialLoading = false;
 
         }
     }
 
     private async Task LoadMore()
     {
-        _isLoadMore = true;
+        _isLoadMoreLoading = true;
         _currentPage++;
         List<Game> newGames;
         try
@@ -99,11 +150,26 @@ else
         }
         finally
         {
-            _isLoadMore = false;
+            _isLoadMoreLoading = false;
 
         }
-
     }
 
-    
+    private void ToggleAdvancedFilter()
+    {
+        _advancedFilterVisible = !_advancedFilterVisible;
+    }
+    private async Task HandleOrderingChangeAsync()
+    {
+        string selectedOrdering = _searchParameters.Ordering;
+        if (selectedOrdering == "-released")
+        {
+            
+            if (!_searchParameters.EndYear.HasValue)
+            {
+                _searchParameters.EndYear = DateTime.Now.Year;
+            }
+        }
+        await HandleSearch(_searchParameters);
+    }
 }

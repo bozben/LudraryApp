@@ -73,6 +73,12 @@ namespace Ludrary.Services
             {
                 url += $"&genres={searchParams.GenreSlug}";
             }
+            if (searchParams.MinMetacritic.HasValue || searchParams.MaxMetacritic.HasValue)
+            {
+                var minScore = searchParams.MinMetacritic ?? 0;
+                var maxScore = searchParams.MaxMetacritic ?? 100;
+                url += $"&metacritic={minScore},{maxScore}";
+            }
 
             var response = await _httpClient.GetAsync(url);
             response.EnsureSuccessStatusCode();
@@ -82,9 +88,28 @@ namespace Ludrary.Services
             {
                 PropertyNameCaseInsensitive = true
             };
-            var SearchListResponse = JsonSerializer.Deserialize<GameListResponse>(jsonContent, options);
+            var result = JsonSerializer.Deserialize<GameListResponse>(jsonContent, options);
+            var initialGames=result?.Games ?? new List<Game>();
 
-            return SearchListResponse.Games;
+            if(searchParams.TagIds.Count>1)
+            {
+                var finalGames = new List<Game>();
+                foreach (var game in initialGames)
+                {
+                    var gameTagIds = new HashSet<int>(game.Tags.Select(t => t.Id));
+
+                    bool hasAllTags = searchParams.TagIds.All(selectedTagId => gameTagIds.Contains(selectedTagId));
+                    if (hasAllTags)
+                    {
+                        finalGames.Add(game);
+                    }
+                }
+                return finalGames;
+            }
+            else
+            {
+                return initialGames;
+            }
         }
 
         public async Task<GameInfo?> GetGameInfoAsync(int id)
@@ -179,18 +204,19 @@ namespace Ludrary.Services
 
         public async Task<List<Game>> GetGamesByCreatorAsync(string creatorSlug, string creatorType, int page = 1)
         {
-            var url = "";
-            if(creatorType == "developers")
+            var url = $"games?key={apiKey}&page={page}&page_size=12";
+            if (creatorType == "developers")
             {
-                url = $"games?key={apiKey}&developers={creatorSlug}&page={page}&page_size=12";
-            }else if(creatorType == "publishers")
+                url += $"&developers={creatorSlug}";
+            }
+            else if(creatorType == "publishers")
             {
-                url = $"games?key={apiKey}&publishers={creatorSlug}&page={page}&page_size=12";
-
+                url += $"&publishers={creatorSlug}";
             }
             else
             {
                 Console.WriteLine("Invalid Creator Type");
+                return new List<Game>();
             }
 
 
@@ -207,5 +233,23 @@ namespace Ludrary.Services
 
             return result.Games;
         }
+
+        public async Task<Genre> GetGenreDetailsAsync(string genreSlug)
+        {
+            string url=$"genres/{genreSlug}?key={apiKey}";
+
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var jsonContent = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions()
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            var result = JsonSerializer.Deserialize<Genre>(jsonContent, options);
+            return result;
+        }
+
     }
 }
