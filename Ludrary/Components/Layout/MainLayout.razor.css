@@ -13,6 +13,7 @@ header {
     background-color: rgba(18, 18, 18, 0.92);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+    transition: padding 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
 .logo {
@@ -156,7 +157,23 @@ footer {
             color: var(--gold);
             transform: translateX(5px);
         }
+.api-disclaimer {
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
 
+    .api-disclaimer a {
+        color: var(--gold);
+        text-decoration: none;
+    }
+
+        .api-disclaimer a:hover {
+            text-decoration: underline;
+        }
 .copyright {
     text-align: center;
     padding-top: 50px;
@@ -169,3 +186,4 @@ footer {
     display: flex; /* Ýki <ul>'yi yan yana getirir */
     gap: 2rem; /* Sütunlar arasýna boþluk koyar */
 }
+
