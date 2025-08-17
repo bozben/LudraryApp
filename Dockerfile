@@ -1,18 +1,21 @@
-
+# --- Build Stage ---
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
+WORKDIR /source
 
-COPY ["Ludrary/Ludrary.csproj", "Ludrary/"]
-RUN dotnet restore "Ludrary/Ludrary.csproj"
+COPY *.sln .
+COPY Ludrary/Ludrary.csproj ./Ludrary/
+RUN dotnet restore
 
 COPY . .
-WORKDIR "/src/Ludrary"
-RUN dotnet build "Ludrary.csproj" -c Release -o /app/build
+WORKDIR /source/Ludrary
+RUN dotnet publish -c Release -o /app/publish --no-restore
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS publish
+# --- Final Stage ---
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-COPY --from=build /app/build .
+COPY --from=build /app/publish .
 
-ENV ASPNETCORE_URLS=http://+:80
+
+ENV ASPNETCORE_URLS=http://+:$PORT
 
 ENTRYPOINT ["dotnet", "Ludrary.dll"]
