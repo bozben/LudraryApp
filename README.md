@@ -61,4 +61,4 @@ Ludrary, C# ve .NET ekosistemindeki yetenekleri sergilemek amacıyla bir portfol
 
 ## 🌟 Canlı Demo
 
-**[DAĞITIMDAN SONRA AZURE LİNKİ BURAYA GELECEK]**
+**https://ludrary-games.onrender.com**
