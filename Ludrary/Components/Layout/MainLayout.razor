@@ -80,8 +80,15 @@
         
         if (firstRender && !_jsInitialized)
         {
-            await JSRuntime.InvokeVoidAsync("createParticles");
-            _jsInitialized = true;
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("createParticles");
+                _jsInitialized = true;
+            }
+            catch (JSException ex)
+            {
+                Console.WriteLine($"Could not invoke JS function 'createParticles': {ex.Message}");
+            }
         }
     }
     

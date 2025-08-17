@@ -157,8 +157,15 @@
             _isInitialLoading = false;
 
         }
-        await Task.Delay(50);
-        await JSRuntime.InvokeVoidAsync("scrollToElement", "results-anchor");
+        try
+        {
+            await Task.Delay(50); 
+            await JSRuntime.InvokeVoidAsync("scrollToElement", "results-anchor");
+        }
+        catch (JSException ex)
+        {
+            Console.WriteLine($"Could not invoke JS function 'scrollToElement': {ex.Message}");
+        }
     }
 
     private async Task LoadMore()
