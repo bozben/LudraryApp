@@ -25,7 +25,19 @@
         padding-bottom: 0.75rem;
         text-transform: uppercase;
     }
+@media (max-width: 768px) { 
+    .filter-panel {
+        grid-template-columns: 1fr;
+    }
 
+    .tag-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .range-filters {
+        grid-template-columns: 1fr;
+    }
+}
 .checkbox-list {
     max-height: 250px; 
     overflow-y: auto;

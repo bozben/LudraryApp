@@ -77,11 +77,12 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        
         if (firstRender && !_jsInitialized)
         {
             await JSRuntime.InvokeVoidAsync("createParticles");
-            await JSRuntime.InvokeVoidAsync("initializeHeaderScrollEffect");
             _jsInitialized = true;
         }
     }
+    
 }

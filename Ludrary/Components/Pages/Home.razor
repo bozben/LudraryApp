@@ -1,5 +1,6 @@
 ﻿@page "/"
 @inject RawgApiService RawgApi
+@inject IJSRuntime JSRuntime
 
 <PageTitle>Ludrary - Game Recommendation Engine</PageTitle>
 
@@ -24,11 +25,7 @@
 
     <div class="advanced-filter-toggle">
         <a @onclick="ToggleAdvancedFilter">
-            @if (_advancedFilterVisible)
-            {
-                <span><i class="fas fa-chevron-up"></i> Hide Advanced Filters</span>
-            }
-            else
+            @if (!_advancedFilterVisible)
             {
                 <span><i class="fas fa-chevron-down"></i> Show Advanced Filters</span>
             }
@@ -38,13 +35,25 @@
 
 @if (_advancedFilterVisible)
 {
-    <GameFilter SearchParameters="_searchParameters" OnSearchClicked="HandleSearch" />
-    <div class="filter-logic-notice">
-        <p><strong>Genre</strong> and <strong>platform</strong> filters use an <strong>OR</strong> algorithm, meaning games with at least one selected item will appear. <strong>Tags</strong>, however, use an <strong>AND</strong> algorithm, so a game must have <strong>all</strong> selected tags to be shown.</p>
+    <div class="advanced-filter-wrapper">
+
+        <GameFilter SearchParameters="_searchParameters" OnSearchClicked="HandleSearch" />
+
+        <div class="filter-logic-notice">
+            <p><strong>Genre</strong> and <strong>platform</strong> filters use an <strong>OR</strong> algorithm, meaning games with at least one selected item will appear. <strong>Tags</strong>, however, use an <strong>AND</strong> algorithm, so a game must have <strong>all</strong> selected tags to be shown.</p>
+        </div>
+
+        <div class="advanced-filter-toggle bottom-toggle">
+            <a @onclick="ToggleAdvancedFilter">
+                <span><i class="fas fa-chevron-up"></i> Hide Advanced Filters</span>
+            </a>
+        </div>
+
     </div>
+    
 }
 
-<section class="results-section">
+<section class="results-section" id="results-anchor">
     <hr />
     <div class="sorting-container">
         <label for="ordering-select">Sort by:</label>
@@ -131,6 +140,13 @@
         _isInitialLoading = true;
         _searchParameters = parameters;
         _currentPage = 1;
+        if (_searchParameters.StartYear.HasValue && _searchParameters.EndYear.HasValue && _searchParameters.StartYear > _searchParameters.EndYear)
+        {
+            
+            var tempYear = _searchParameters.StartYear;
+            _searchParameters.StartYear = _searchParameters.EndYear;
+            _searchParameters.EndYear = tempYear;
+        }
         try
         {
             games = await RawgApi.SearchGamesAsync(_searchParameters, _currentPage);
@@ -141,6 +157,8 @@
             _isInitialLoading = false;
 
         }
+        await Task.Delay(50);
+        await JSRuntime.InvokeVoidAsync("scrollToElement", "results-anchor");
     }
 
     private async Task LoadMore()

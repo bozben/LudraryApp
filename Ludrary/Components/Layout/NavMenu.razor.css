@@ -1,0 +1,7 @@
+@media (max-width: 900px) { 
+    nav ul {
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}

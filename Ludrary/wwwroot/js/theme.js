@@ -23,16 +23,12 @@
         particlesContainer.appendChild(particle);
     }
 }
-
-function initializeHeaderScrollEffect() {
-    window.addEventListener('scroll', function () {
-        const header = document.querySelector('header');
-        if (window.scrollY > 50) {
-            header.style.padding = '12px 50px';
-            header.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.4)';
-        } else {
-            header.style.padding = '20px 50px';
-            header.style.boxShadow = 'none';
-        }
-    });
+function scrollToElement(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
 }

@@ -98,9 +98,21 @@ else
             <div class="filter-group">
                 <h5>RELEASE YEAR</h5>
                 <div class="range-inputs">
-                    <input type="number" @bind="SearchParameters.StartYear" class="form-control" placeholder="From" min="1960" max="@DateTime.Now.Year" />
+                    <select @bind="SearchParameters.StartYear" class="form-select">
+                        <option value="">From</option> 
+                        @for (int year = DateTime.Now.Year; year >= 1960; year--)
+                        {
+                            <option value="@year">@year</option>
+                        }
+                    </select>
                     <span>-</span>
-                    <input type="number" @bind="SearchParameters.EndYear" class="form-control" placeholder="To" min="1960" max="@DateTime.Now.Year" />
+                    <select @bind="SearchParameters.EndYear" class="form-select">
+                        <option value="">To</option>
+                        @for (int year = DateTime.Now.Year; year >= 1960; year--)
+                        {
+                            <option value="@year">@year</option>
+                        }
+                    </select>
                 </div>
             </div>
 
