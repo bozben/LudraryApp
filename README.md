@@ -55,8 +55,7 @@ Ludrary, C# ve .NET ekosistemindeki yetenekleri sergilemek amacıyla bir portfol
 
 *   **Backend & Frontend:** C# ile .NET 8 ve Blazor Server
 *   **API:** [RAWG Video Oyunları Veritabanı API](https://rawg.io/apidocs)
-*   **Stil:** CSS Değişkenleri, Grid ve Flexbox gibi modern özelliklerle oluşturulmuş özel CSS. (Bootstrap gibi CSS kütüphaneleri kullanılmamıştır).
-*   **IDE:** Visual Studio 2022
+*   **Stil:** CSS Değişkenleri, Grid ve Flexbox gibi modern özelliklerle oluşturulmuş özel CSS.
 *   **Versiyon Kontrolü:** Git & GitHub
 *   **Dağıtım (Hosting):** Microsoft Azure App Service
 
