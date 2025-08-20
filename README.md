@@ -24,6 +24,9 @@
 # Ludrary - Modern Bir Oyun Keşif Platformu 
 
 Ludrary, C# ve .NET ekosistemindeki yetenekleri sergilemek amacıyla bir portfolyo projesi olarak geliştirilmiş dinamik ve modern bir web uygulamasıdır. Güçlü [RAWG Video Oyunları Veritabanı API](https://rawg.io/apidocs)'ını kullanarak, kullanıcılara 500.000'den fazla oyunu içeren zengin ve interaktif bir kütüphanede oyun keşfetme, filtreleme ve araştırma imkanı sunar.
+## 🌟 Canlı Demo
+
+**https://ludrary-games.onrender.com**
 
 ---
 
@@ -59,6 +62,4 @@ Ludrary, C# ve .NET ekosistemindeki yetenekleri sergilemek amacıyla bir portfol
 
 ---
 
-## 🌟 Canlı Demo
 
-**https://ludrary-games.onrender.com**
