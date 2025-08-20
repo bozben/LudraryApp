@@ -47,7 +47,7 @@ Ludrary, C# ve .NET ekosistemindeki yetenekleri sergilemek amacıyla bir portfol
     *   **Geliştirici Sayfaları:** Geliştiricilere özel, o geliştiriciye ait tüm oyunları listeleyen, dinamik olarak oluşturulmuş sayfalar.
     *   **"En İyi Türler" Sayfaları:** Belirli bir türdeki en iyi oyunları farklı dönemlere göre sıralayan editoryal tarzda sayfalar.
     *   **Yakında Çıkacak Oyunlar Sayfası:** Merakla beklenen yeni oyunlar için özel bir bölüm.
-*   **Özgün ve Duyarlı (Responsive) Tema:** Masaüstü, tablet ve mobil cihazlarda kusursuz çalışan, altın sarısı vurgulara sahip, özel olarak tasarlanmış modern bir karanlık tema.
+*   **Özgün Tema:** Altın sarısı vurgulara sahip, özel olarak tasarlanmış modern bir karanlık tema.
 
 ---
 
